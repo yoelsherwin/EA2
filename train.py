@@ -14,10 +14,14 @@ class Model(nn.Module):
         self.bn1 = nn.BatchNorm1d(100)
         self.fc2 = nn.Linear(100, 80)
         self.bn2 = nn.BatchNorm1d(80)
-        self.fc3 = nn.Linear(80, 60)
-        self.bn3 = nn.BatchNorm1d(60)
+        self.fc3 = nn.Linear(80, 50)
+        self.bn3 = nn.BatchNorm1d(50)
 
-        self.fc4 = nn.Linear(60, 2)
+        self.fc4 = nn.Linear(50, 40)
+        self.bn4 = nn.BatchNorm1d(40)
+        self.fc5 = nn.Linear(40, 20)
+        self.bn5 = nn.BatchNorm1d(20)
+        self.fc6 = nn.Linear(20, 2)
 
         self.softmax = nn.Softmax(dim=1)
 
@@ -25,15 +29,18 @@ class Model(nn.Module):
         x = F.relu(self.bn1(self.fc1(x)))
         x = F.relu(self.bn2(self.fc2(x)))
         x = F.relu(self.bn3(self.fc3(x)))
+        x = F.relu(self.bn4(self.fc4(x)))
+        x = F.relu(self.bn5(self.fc5(x)))
 
-        x = self.fc4(x)
+
+        x = self.fc6(x)
         # x = self.softmax(x)
 
         return x
 
 
 model = Model()
-optimizer = torch.optim.Adam(model.parameters(), lr=0.005)
+optimizer = torch.optim.Adam(model.parameters(), lr=0.003)
 loss_fn = nn.CrossEntropyLoss()
 
 epochs = 1000
