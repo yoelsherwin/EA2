@@ -42,7 +42,7 @@ def train(model):
     optimizer = torch.optim.Adam(model.parameters(), lr=0.003)
     loss_fn = nn.CrossEntropyLoss()
 
-    epochs = 1000
+    epochs = 50
 
     for epoch in range(epochs):
         sum_loss = 0
@@ -69,5 +69,5 @@ def train(model):
 
         optimizer.step()
 
-        print(f"average loss: {sum_loss / num_items}")
-        print(f"accuracy: {float(num_corrects) / float(num_items)}")
+        #print(f"average loss: {sum_loss / num_items}")
+        #print(f"accuracy: {float(num_corrects) / float(num_items)}")

@@ -2,13 +2,15 @@ import train
 import create_params
 import random
 import torch
+import copy
+import data_loader as dl
 
 POP_SIZE = 5
 FILENAME = "train.csv"
-SIZE = 3000
+SIZE = 10000
 MAX_GEN = 30
 
-data = create_params.special_normalize(FILENAME, SIZE)
+data = dl.train_loader
 fit_data = []
 mut_data = []
 
@@ -29,7 +31,7 @@ def mix(full, fit, mut):
                 fit.append(full[i])
                 fcount += 1
 
-mix(data, fit_data, mut_data)
+#mix(data, fit_data, mut_data)
 
 def compute(model):
     global fit_data
@@ -37,15 +39,15 @@ def compute(model):
     for x,y in data:
         res = model(x)
         res = res.argmax(dim=1)
-        ans = y.argmx(dim=1)
-        if res == ans == 1:
-            TP += 1
-        elif res == ans == 0:
-            TN += 1
-        elif res == 0 and ans == 1:
-            FN += 1
-        else:
-            FP += 1
+        for i in range(len(res)):
+            if res[i] == y[i] and y[i] == 1:
+                TP += 1
+            elif res[i] == y[i] and y[i] == 0:
+                TN += 1
+            elif res[i] == 0 and y[i] == 1:
+                FN += 1
+            else:
+                FP += 1
     if ((TP + FP) == 0):
         precision = 0
     else:
@@ -69,10 +71,11 @@ def run(pool):
     global fit_data
     global mut_data
     gen = 0
+    all_time_max = -1
     while gen < MAX_GEN:
         fit_data = []
         mut_data = []
-        mix(data, fit_data, mut_data)
+        #mix(data, fit_data, mut_data)
         best = -1
         max = -1
         for i in range(POP_SIZE):
@@ -80,8 +83,18 @@ def run(pool):
             if fitness > max:
                 best = i
                 max = fitness
+                if all_time_max < max:
+                    all_time_max = max
+        new_pool = []
+        new_pool.append(pool[best])
+        print("\n********\nall time best: " + str(all_time_max) + ", curr best: " + str(max) + ", gen: " +str(gen) + "\n********\n")
+        for i in range(POP_SIZE - 1):
+            temp = copy.deepcopy(pool[best])
+            train.train(temp)
+            new_pool.append(temp)
+        pool = new_pool
         if gen % 5 == 0:
-            torch.save(pool[best].)
+            torch.save(pool[best].state_dict(), "best.pt")
         gen += 1
 
 
