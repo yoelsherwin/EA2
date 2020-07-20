@@ -38,37 +38,36 @@ class Model(nn.Module):
 
         return x
 
+def train(model):
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.003)
+    loss_fn = nn.CrossEntropyLoss()
 
-model = Model()
-optimizer = torch.optim.Adam(model.parameters(), lr=0.003)
-loss_fn = nn.CrossEntropyLoss()
+    epochs = 1000
 
-epochs = 1000
+    for epoch in range(epochs):
+        sum_loss = 0
+        num_items = 0
+        num_corrects = 0
 
-for epoch in range(epochs):
-    sum_loss = 0
-    num_items = 0
-    num_corrects = 0
+        optimizer.zero_grad()
+        for x, y in dl.train_loader:
+            y_hat = model(x)
 
-    optimizer.zero_grad()
-    for x, y in dl.train_loader:
-        y_hat = model(x)
+            loss = loss_fn(y_hat, y)
+            loss.backward()
 
-        loss = loss_fn(y_hat, y)
-        loss.backward()
+            sum_loss += loss.item()
+            num_items += len(y)
 
-        sum_loss += loss.item()
-        num_items += len(y)
+            argmax = y_hat.argmax(dim=1)
+            corrects = y == argmax
+            corrects = corrects.sum()
+            # print(corrects)
+            # print(corrects.size())
+            # print(corrects.sum())
+            num_corrects += corrects.sum()
 
-        argmax = y_hat.argmax(dim=1)
-        corrects = y == argmax
-        corrects = corrects.sum()
-        # print(corrects)
-        # print(corrects.size())
-        # print(corrects.sum())
-        num_corrects += corrects.sum()
+        optimizer.step()
 
-    optimizer.step()
-
-    print(f"average loss: {sum_loss / num_items}")
-    print(f"accuracy: {float(num_corrects)/float(num_items)}")
+        print(f"average loss: {sum_loss / num_items}")
+        print(f"accuracy: {float(num_corrects) / float(num_items)}")
