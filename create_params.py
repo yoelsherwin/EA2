@@ -1,7 +1,6 @@
 import numpy as np
 import math
 import pickle
-import torch
 
 def special_normalize(filename, size):
     save = open("means.npy", 'rb')
@@ -97,7 +96,7 @@ def create_hyper_params(row):
             diff_stdev[cell % 4] += (row[cell] - row[cell - 4]) * (row[cell] - row[cell - 4])
 
     for i in range(4):
-        param_avg[i] /=  30
+        param_avg[i] /= 30
         param_stdev[i] = math.sqrt(param_stdev[i]/30 - param_avg[i] * param_avg[i])
         diff_avg[i] /= 29
         diff_stdev[i] = math.sqrt(diff_stdev[i]/29 - diff_avg[i] * diff_avg[i])

@@ -57,6 +57,6 @@ train_loader = data.DataLoader(MyDataLoader("train.csv", num_lines=100000),
 
 test_data = data.DataLoader(MyDataLoader("test.csv", num_lines=50000),
                                       batch_size=train_batch,
-                                      shuffle=True,
+                                      shuffle=False,
                                       pin_memory=True)
 
