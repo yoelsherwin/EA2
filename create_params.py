@@ -61,7 +61,7 @@ def createData(file_name, size):
             stdevs[i] += values[i] * values[i]
     for i in range(120):
         means[i] /= size
-        stdevs[i] = math.sqrt(stdevs[i] / size) - means[i] * means[i]
+        stdevs[i] = math.sqrt(stdevs[i] / size - means[i] * means[i])
 
     ## Z score
     line_num = 0
@@ -98,9 +98,9 @@ def create_hyper_params(row):
 
     for i in range(4):
         param_avg[i] /=  30
-        param_stdev[i] = math.sqrt(param_stdev[i]/30) - param_avg[i] * param_avg[i]
+        param_stdev[i] = math.sqrt(param_stdev[i]/30 - param_avg[i] * param_avg[i])
         diff_avg[i] /= 29
-        diff_stdev[i] = math.sqrt(diff_stdev[i]/29) - diff_avg[i] * diff_avg[i]
+        diff_stdev[i] = math.sqrt(diff_stdev[i]/29 - diff_avg[i] * diff_avg[i])
 
     return param_avg, param_stdev, diff_avg, diff_stdev
 
