@@ -25,7 +25,10 @@ def special_normalize(filename, size):
         values = []
         for i in range(121):
             if i == 0:
-                ans = int(values1[i])
+                try:
+                    ans = int(values1[i])
+                except:
+                    ans = 0
             else:
                 values.append((float(values1[i]) - means[i - 1]) / stdevs[i - 1])
         a, b, c, d = create_hyper_params(values)

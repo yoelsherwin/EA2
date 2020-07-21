@@ -7,7 +7,7 @@ import data_loader as dl
 
 POP_SIZE = 5
 FILENAME = "train.csv"
-SIZE = 10000
+SIZE = 100000
 MAX_GEN = 30
 
 data = dl.train_loader
@@ -72,7 +72,8 @@ def run(pool):
     global mut_data
     gen = 0
     all_time_max = -1
-    while gen < MAX_GEN:
+    hof = None
+    while True:
         fit_data = []
         mut_data = []
         #mix(data, fit_data, mut_data)
@@ -85,17 +86,33 @@ def run(pool):
                 max = fitness
                 if all_time_max < max:
                     all_time_max = max
+                    hof = copy.deepcopy(pool[best])
+                    torch.save(hof.state_dict(), "best.pt")
+        print("\n********\nall time best: " + str(all_time_max) + ", curr best: " + str(max) + ", gen: " + str(
+            gen) + "\n********\n")
+        gen += 1
+        if gen > MAX_GEN:
+            break
         new_pool = []
         new_pool.append(pool[best])
-        print("\n********\nall time best: " + str(all_time_max) + ", curr best: " + str(max) + ", gen: " +str(gen) + "\n********\n")
         for i in range(POP_SIZE - 1):
             temp = copy.deepcopy(pool[best])
             train.train(temp)
             new_pool.append(temp)
         pool = new_pool
-        if gen % 5 == 0:
-            torch.save(pool[best].state_dict(), "best.pt")
-        gen += 1
+    file = open("313326019_205385560_15.txt", 'w')
+    train_batch = 1500
+    for x, y in dl.test_data:
+        temp = hof(x)
+        temp = temp.argmax(dim=1)
+        for i in range(len(temp)):
+            if(temp[i] == 1):
+                file.write("1\n")
+            else:
+                file.write("0\n")
+            #file.write(str(temp[i]) + "\n")
+            #print(str(temp[i]) + "\n")
+    file.close()
 
 
 def main():

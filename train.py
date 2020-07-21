@@ -39,7 +39,7 @@ class Model(nn.Module):
         return x
 
 def train(model):
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.003)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.005)
     loss_fn = nn.CrossEntropyLoss()
 
     epochs = 50
