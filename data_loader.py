@@ -49,8 +49,8 @@ def try_parse_int(string, default=0):
         return default
 
 
-train_batch = 1500
-train_loader = data.DataLoader(MyDataLoader("train.csv", num_lines=100000),
+train_batch = 2000
+train_loader = data.DataLoader(MyDataLoader("train.csv", num_lines=200000),
                                       batch_size=train_batch,
                                       shuffle=True,
                                       pin_memory=True)

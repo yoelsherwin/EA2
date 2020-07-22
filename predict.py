@@ -10,8 +10,8 @@ def main():
     model = train.Model()
     model.load_state_dict(torch.load("best.pt"))
     #model.eval()
-    file = open("313326019_205385560_13.txt", 'w')
-    data = dl.train_loader
+    file = open("313326019_205385560_17.txt", 'w')
+    data = dl.test_data
     for x,y in data:
         temp = model(x)
         temp = temp.argmax(dim=1)

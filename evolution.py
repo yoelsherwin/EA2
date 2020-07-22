@@ -101,7 +101,6 @@ def run(pool):
             new_pool.append(temp)
         pool = new_pool
     file = open("313326019_205385560_15.txt", 'w')
-    train_batch = 1500
     for x, y in dl.test_data:
         temp = hof(x)
         temp = temp.argmax(dim=1)

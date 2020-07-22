@@ -14,14 +14,13 @@ class Model(nn.Module):
         self.bn1 = nn.BatchNorm1d(100)
         self.fc2 = nn.Linear(100, 80)
         self.bn2 = nn.BatchNorm1d(80)
-        self.fc3 = nn.Linear(80, 50)
-        self.bn3 = nn.BatchNorm1d(50)
-
-        self.fc4 = nn.Linear(50, 40)
-        self.bn4 = nn.BatchNorm1d(40)
-        self.fc5 = nn.Linear(40, 20)
-        self.bn5 = nn.BatchNorm1d(20)
-        self.fc6 = nn.Linear(20, 2)
+        self.fc3 = nn.Linear(80, 80)
+        self.bn3 = nn.BatchNorm1d(80)
+        self.fc4 = nn.Linear(80, 100)
+        self.bn4 = nn.BatchNorm1d(100)
+        self.fc5 = nn.Linear(100, 30)
+        self.bn5 = nn.BatchNorm1d(30)
+        self.fc6 = nn.Linear(30, 2)
 
         self.softmax = nn.Softmax(dim=1)
 
@@ -39,7 +38,7 @@ class Model(nn.Module):
         return x
 
 def train(model):
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.005)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
     loss_fn = nn.CrossEntropyLoss()
 
     epochs = 50
@@ -49,8 +48,9 @@ def train(model):
         num_items = 0
         num_corrects = 0
 
-        optimizer.zero_grad()
+        #optimizer.zero_grad()
         for x, y in dl.train_loader:
+            optimizer.zero_grad()
             y_hat = model(x)
 
             loss = loss_fn(y_hat, y)
@@ -67,7 +67,8 @@ def train(model):
             # print(corrects.sum())
             num_corrects += corrects.sum()
 
-        optimizer.step()
+            optimizer.step()
+        #optimizer.step()
 
         #print(f"average loss: {sum_loss / num_items}")
         #print(f"accuracy: {float(num_corrects) / float(num_items)}")
