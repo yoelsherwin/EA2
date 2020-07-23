@@ -11,32 +11,33 @@ SIZE = 100000
 MAX_GEN = 30
 
 data = dl.train_loader
-fit_data = []
-mut_data = []
+l = torch.chunk(data, 2, dim=1)
+fit = l[0]
+mutate = l[1]
+mutate = torch.chunk(mutate, 4, dim=1)
 
-def mix(full, fit, mut):
-    fcount = mcount = 0
-    for i in range(SIZE):
-        if fcount >= SIZE // 2:
-            mut.append(full[i])
-            mcount += 1
-        elif mcount >= SIZE // 2:
-            fit.append(full[i])
-            fcount += 1
-        else:
-            if random.randint(0, 1) == 1:
-                mut.append(full[i])
-                mcount += 1
-            else:
-                fit.append(full[i])
-                fcount += 1
+# def mix(full, fit, mut):
+#     fcount = mcount = 0
+#     for i in range(SIZE):
+#         if fcount >= SIZE // 2:
+#             mut.append(full[i])
+#             mcount += 1
+#         elif mcount >= SIZE // 2:
+#             fit.append(full[i])
+#             fcount += 1
+#         else:
+#             if random.randint(0, 1) == 1:
+#                 mut.append(full[i])
+#                 mcount += 1
+#             else:
+#                 fit.append(full[i])
+#                 fcount += 1
 
 #mix(data, fit_data, mut_data)
 
-def compute(model):
-    global fit_data
+def compute(model, data):
     TP = TN = FP = FN = 0
-    for x,y in data:
+    for x,y in fit:
         res = model(x)
         res = res.argmax(dim=1)
         for i in range(len(res)):
@@ -57,8 +58,9 @@ def compute(model):
         recall = 0
     else:
         recall = TP / (TP + FN)
-    if ((0.0625 * precision + recall) != 0):
-        Fbeta = (1.0625 * precision * recall) / (0.0625 * precision + recall)
+    if ((0.0156 * precision + recall) != 0):
+        #Fbeta = (1.0625 * precision * recall) / (0.0625 * precision + recall)
+        Fbeta = (1.0156 * precision * recall) / (0.0156 * precision + recall)
     else:
         Fbeta = 0
     print("TP: " + str(TP) + " TN: " + str(TN) + " FP: " + str(FP) + " FN: " + str(FN) +
@@ -68,19 +70,16 @@ def compute(model):
 
 
 def run(pool):
-    global fit_data
-    global mut_data
+    global fit
+    global mutate
     gen = 0
     all_time_max = -1
     hof = None
     while True:
-        fit_data = []
-        mut_data = []
-        #mix(data, fit_data, mut_data)
         best = -1
         max = -1
         for i in range(POP_SIZE):
-            fitness = compute(pool[i])
+            fitness = compute(pool[i], fit)
             if fitness > max:
                 best = i
                 max = fitness
@@ -97,10 +96,10 @@ def run(pool):
         new_pool.append(pool[best])
         for i in range(POP_SIZE - 1):
             temp = copy.deepcopy(pool[best])
-            train.train(temp)
+            train.train(temp, mutate[i])
             new_pool.append(temp)
         pool = new_pool
-    file = open("313326019_205385560_15.txt", 'w')
+    file = open("313326019_205385560_23.txt", 'w')
     for x, y in dl.test_data:
         temp = hof(x)
         temp = temp.argmax(dim=1)
@@ -121,132 +120,132 @@ def main():
     run(pool)
 
 
-def split(data):
-    a = []
-    b = []
-    c = []
-    d = []
-    ac = bc = cc = dc = 0
-    for line in data:
-        if (ac == bc == cc == SIZE // 8):
-            d.append(line)
-            dc += 1
-        elif (ac == bc == dc == SIZE // 8):
-            c.append(line)
-            cc += 1
-        elif (ac == cc == dc == SIZE // 8):
-            b.append(line)
-            bc += 1
-        elif (bc == cc == dc == SIZE // 8):
-            a.append(line)
-            ac += 1
-        elif (ac == bc == SIZE // 8):
-            test = random.randint(0, 1)
-            if test == 1:
-                c.append(line)
-                cc += 1
-            else:
-                d.append(line)
-                dc += 1
-        elif (ac == cc == SIZE // 8):
-            test = random.randint(0, 1)
-            if test == 1:
-                b.append(line)
-                bc += 1
-            else:
-                d.append(line)
-                dc += 1
-        elif (ac == dc == SIZE // 8):
-            test = random.randint(0, 1)
-            if test == 1:
-                c.append(line)
-                cc += 1
-            else:
-                b.append(line)
-                bc += 1
-        elif (bc == cc == SIZE // 8):
-            test = random.randint(0, 1)
-            if test == 1:
-                a.append(line)
-                ac += 1
-            else:
-                d.append(line)
-                dc += 1
-        elif (bc == dc == SIZE // 8):
-            test = random.randint(0, 1)
-            if test == 1:
-                a.append(line)
-                ac += 1
-            else:
-                c.append(line)
-                cc += 1
-        elif (cc == dc == SIZE // 8):
-            test = random.randint(0, 1)
-            if test == 1:
-                a.append(line)
-                ac += 1
-            else:
-                b.append(line)
-                bc += 1
-        elif (ac == SIZE // 8):
-            test = random.randint(0, 2)
-            if test == 0:
-                b.append(line)
-                bc += 1
-            elif test == 1:
-                c.append(line)
-                cc += 1
-            else:
-                d.append(line)
-                dc += 1
-        elif (bc == SIZE // 8):
-            test = random.randint(0, 2)
-            if test == 0:
-                a.append(line)
-                ac += 1
-            elif test == 1:
-                c.append(line)
-                cc += 1
-            else:
-                d.append(line)
-                dc += 1
-        elif (cc == SIZE // 8):
-            test = random.randint(0, 2)
-            if test == 0:
-                b.append(line)
-                bc += 1
-            elif test == 1:
-                a.append(line)
-                ac += 1
-            else:
-                d.append(line)
-                dc += 1
-        elif (dc == SIZE // 8):
-            test = random.randint(0, 2)
-            if test == 0:
-                b.append(line)
-                bc += 1
-            elif test == 1:
-                c.append(line)
-                cc += 1
-            else:
-                a.append(line)
-                ac += 1
-        else:
-            test = random.randint(0, 4)
-            if test == 0:
-                a.append(line)
-                ac += 1
-            elif test == 1:
-                b.append(line)
-                bc += 1
-            elif test == 2:
-                c.append(line)
-                cc += 1
-            else:
-                d.append(line)
-                dc += 1
-    return a, b, c, d
+# def split(data):
+#     a = []
+#     b = []
+#     c = []
+#     d = []
+#     ac = bc = cc = dc = 0
+#     for line in data:
+#         if (ac == bc == cc == SIZE // 8):
+#             d.append(line)
+#             dc += 1
+#         elif (ac == bc == dc == SIZE // 8):
+#             c.append(line)
+#             cc += 1
+#         elif (ac == cc == dc == SIZE // 8):
+#             b.append(line)
+#             bc += 1
+#         elif (bc == cc == dc == SIZE // 8):
+#             a.append(line)
+#             ac += 1
+#         elif (ac == bc == SIZE // 8):
+#             test = random.randint(0, 1)
+#             if test == 1:
+#                 c.append(line)
+#                 cc += 1
+#             else:
+#                 d.append(line)
+#                 dc += 1
+#         elif (ac == cc == SIZE // 8):
+#             test = random.randint(0, 1)
+#             if test == 1:
+#                 b.append(line)
+#                 bc += 1
+#             else:
+#                 d.append(line)
+#                 dc += 1
+#         elif (ac == dc == SIZE // 8):
+#             test = random.randint(0, 1)
+#             if test == 1:
+#                 c.append(line)
+#                 cc += 1
+#             else:
+#                 b.append(line)
+#                 bc += 1
+#         elif (bc == cc == SIZE // 8):
+#             test = random.randint(0, 1)
+#             if test == 1:
+#                 a.append(line)
+#                 ac += 1
+#             else:
+#                 d.append(line)
+#                 dc += 1
+#         elif (bc == dc == SIZE // 8):
+#             test = random.randint(0, 1)
+#             if test == 1:
+#                 a.append(line)
+#                 ac += 1
+#             else:
+#                 c.append(line)
+#                 cc += 1
+#         elif (cc == dc == SIZE // 8):
+#             test = random.randint(0, 1)
+#             if test == 1:
+#                 a.append(line)
+#                 ac += 1
+#             else:
+#                 b.append(line)
+#                 bc += 1
+#         elif (ac == SIZE // 8):
+#             test = random.randint(0, 2)
+#             if test == 0:
+#                 b.append(line)
+#                 bc += 1
+#             elif test == 1:
+#                 c.append(line)
+#                 cc += 1
+#             else:
+#                 d.append(line)
+#                 dc += 1
+#         elif (bc == SIZE // 8):
+#             test = random.randint(0, 2)
+#             if test == 0:
+#                 a.append(line)
+#                 ac += 1
+#             elif test == 1:
+#                 c.append(line)
+#                 cc += 1
+#             else:
+#                 d.append(line)
+#                 dc += 1
+#         elif (cc == SIZE // 8):
+#             test = random.randint(0, 2)
+#             if test == 0:
+#                 b.append(line)
+#                 bc += 1
+#             elif test == 1:
+#                 a.append(line)
+#                 ac += 1
+#             else:
+#                 d.append(line)
+#                 dc += 1
+#         elif (dc == SIZE // 8):
+#             test = random.randint(0, 2)
+#             if test == 0:
+#                 b.append(line)
+#                 bc += 1
+#             elif test == 1:
+#                 c.append(line)
+#                 cc += 1
+#             else:
+#                 a.append(line)
+#                 ac += 1
+#         else:
+#             test = random.randint(0, 4)
+#             if test == 0:
+#                 a.append(line)
+#                 ac += 1
+#             elif test == 1:
+#                 b.append(line)
+#                 bc += 1
+#             elif test == 2:
+#                 c.append(line)
+#                 cc += 1
+#             else:
+#                 d.append(line)
+#                 dc += 1
+#     return a, b, c, d
 
 
 
