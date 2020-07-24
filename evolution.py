@@ -71,11 +71,14 @@ def run(pool):
     gen = 0
     all_time_max = -1
     hof = None
+    stats = open("stats.csv", 'w')
     while True:
         best = -1
         max = -1
+        all = 0
         for i in range(POP_SIZE):
             fitness = compute(pool[i], fit)
+            all += fitness
             if fitness > max:
                 best = i
                 max = fitness
@@ -83,6 +86,8 @@ def run(pool):
                     all_time_max = max
                     hof = copy.deepcopy(pool[best])
                     torch.save(hof.state_dict(), "best.pt")
+        all /= POP_SIZE
+        stats.write(str(max) + "," + str(all) + "\n")
         print("\n********\nall time best: " + str(all_time_max) + ", curr best: " + str(max) + ", gen: " + str(
             gen) + "\n********\n")
         gen += 1
@@ -122,6 +127,7 @@ def run(pool):
             #file.write(str(temp[i]) + "\n")
             #print(str(temp[i]) + "\n")
     file.close()
+    stats.close()
 
 
 def main():
