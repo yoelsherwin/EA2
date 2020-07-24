@@ -10,11 +10,8 @@ FILENAME = "train.csv"
 SIZE = 100000
 MAX_GEN = 30
 
-data = dl.train_loader
-l = torch.chunk(data, 2, dim=1)
-fit = l[0]
-mutate = l[1]
-mutate = torch.chunk(mutate, 4, dim=1)
+fit = dl.fit
+mut = dl.mut
 
 # def mix(full, fit, mut):
 #     fcount = mcount = 0
@@ -37,7 +34,7 @@ mutate = torch.chunk(mutate, 4, dim=1)
 
 def compute(model, data):
     TP = TN = FP = FN = 0
-    for x,y in fit:
+    for x,y in data:
         res = model(x)
         res = res.argmax(dim=1)
         for i in range(len(res)):
@@ -58,9 +55,10 @@ def compute(model, data):
         recall = 0
     else:
         recall = TP / (TP + FN)
-    if ((0.0156 * precision + recall) != 0):
-        #Fbeta = (1.0625 * precision * recall) / (0.0625 * precision + recall)
-        Fbeta = (1.0156 * precision * recall) / (0.0156 * precision + recall)
+    #if ((0.0156 * precision + recall) != 0):
+    if ((0.0625 * precision + recall) != 0):
+        Fbeta = (1.0625 * precision * recall) / (0.0625 * precision + recall)
+        #Fbeta = (1.0156 * precision * recall) / (0.0156 * precision + recall)
     else:
         Fbeta = 0
     print("TP: " + str(TP) + " TN: " + str(TN) + " FP: " + str(FP) + " FN: " + str(FN) +
@@ -70,8 +68,6 @@ def compute(model, data):
 
 
 def run(pool):
-    global fit
-    global mutate
     gen = 0
     all_time_max = -1
     hof = None
@@ -94,12 +90,27 @@ def run(pool):
             break
         new_pool = []
         new_pool.append(pool[best])
+        lengths = []
+        lengths.append(125000)
+        lengths.append(125000)
+        lengths.append(125000)
+        lengths.append(125000)
+        a,b,c,d = torch.utils.data.random_split(mut, lengths)
+        helper = []
+        a = torch.utils.data.DataLoader(dl.MyDataset(a), batch_size=dl.train_batch, shuffle=True, pin_memory=True)
+        b = torch.utils.data.DataLoader(dl.MyDataset(b), batch_size=dl.train_batch, shuffle=True, pin_memory=True)
+        c = torch.utils.data.DataLoader(dl.MyDataset(c), batch_size=dl.train_batch, shuffle=True, pin_memory=True)
+        d = torch.utils.data.DataLoader(dl.MyDataset(d), batch_size=dl.train_batch, shuffle=True, pin_memory=True)
+        helper.append(a)
+        helper.append(b)
+        helper.append(c)
+        helper.append(d)
         for i in range(POP_SIZE - 1):
             temp = copy.deepcopy(pool[best])
-            train.train(temp, mutate[i])
+            train.train(temp, helper[i])
             new_pool.append(temp)
         pool = new_pool
-    file = open("313326019_205385560_23.txt", 'w')
+    file = open("313326019_205385560_24.txt", 'w')
     for x, y in dl.test_data:
         temp = hof(x)
         temp = temp.argmax(dim=1)
