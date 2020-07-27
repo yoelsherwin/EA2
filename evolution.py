@@ -9,9 +9,10 @@ POP_SIZE = 5
 FILENAME = "train.csv"
 SIZE = 100000
 MAX_GEN = 30
+THRESHOLD = 0.3
 
-fit = dl.fit
-mut = dl.mut
+# fit = dl.fit
+# mut = dl.mut
 tl = dl.train_loader
 
 # def mix(full, fit, mut):
@@ -37,8 +38,14 @@ def compute(model, data):
     TP = TN = FP = FN = 0
     for x,y in data:
         res = model(x)
-        res = res.argmax(dim=1)
-        #print(res[0], y[0])
+        #res = res.argmax(dim=1)
+        ans = []
+        for i in range(len(res)):
+            if res[i][0] + THRESHOLD < res[i][1]:
+                ans.append(1)
+            else:
+                ans.append(0)
+        res = ans
         for i in range(len(res)):
             if res[i] == y[i] and y[i] == 1:
                 TP += 1

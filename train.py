@@ -44,7 +44,7 @@ def train(model, data):
     optimizer = torch.optim.Adam(model.parameters(), lr=0.007)
     loss_fn = nn.CrossEntropyLoss()
 
-    epochs = 25
+    epochs = 20
 
     for epoch in range(epochs):
         sum_loss = 0
