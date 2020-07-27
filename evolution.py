@@ -12,6 +12,7 @@ MAX_GEN = 30
 
 fit = dl.fit
 mut = dl.mut
+tl = dl.train_loader
 
 # def mix(full, fit, mut):
 #     fcount = mcount = 0
@@ -37,6 +38,7 @@ def compute(model, data):
     for x,y in data:
         res = model(x)
         res = res.argmax(dim=1)
+        #print(res[0], y[0])
         for i in range(len(res)):
             if res[i] == y[i] and y[i] == 1:
                 TP += 1
@@ -58,7 +60,7 @@ def compute(model, data):
     #if ((0.0156 * precision + recall) != 0):
     if ((0.0625 * precision + recall) != 0):
         Fbeta = (1.0625 * precision * recall) / (0.0625 * precision + recall)
-        #Fbeta = (1.0156 * precision * recall) / (0.0156 * precision + recall)
+     #   Fbeta = (1.0156 * precision * recall) / (0.0156 * precision + recall)
     else:
         Fbeta = 0
     print("TP: " + str(TP) + " TN: " + str(TN) + " FP: " + str(FP) + " FN: " + str(FN) +
@@ -77,7 +79,7 @@ def run(pool):
         max = -1
         all = 0
         for i in range(POP_SIZE):
-            fitness = compute(pool[i], fit)
+            fitness = compute(pool[i], tl)
             all += fitness
             if fitness > max:
                 best = i
@@ -95,27 +97,27 @@ def run(pool):
             break
         new_pool = []
         new_pool.append(pool[best])
-        lengths = []
-        lengths.append(125000)
-        lengths.append(125000)
-        lengths.append(125000)
-        lengths.append(125000)
-        a,b,c,d = torch.utils.data.random_split(mut, lengths)
-        helper = []
-        a = torch.utils.data.DataLoader(dl.MyDataset(a), batch_size=dl.train_batch, shuffle=True, pin_memory=True)
-        b = torch.utils.data.DataLoader(dl.MyDataset(b), batch_size=dl.train_batch, shuffle=True, pin_memory=True)
-        c = torch.utils.data.DataLoader(dl.MyDataset(c), batch_size=dl.train_batch, shuffle=True, pin_memory=True)
-        d = torch.utils.data.DataLoader(dl.MyDataset(d), batch_size=dl.train_batch, shuffle=True, pin_memory=True)
-        helper.append(a)
-        helper.append(b)
-        helper.append(c)
-        helper.append(d)
+        # lengths = []
+        # lengths.append(125000)
+        # lengths.append(125000)
+        # lengths.append(125000)
+        # lengths.append(125000)
+        # a,b,c,d = torch.utils.data.random_split(mut, lengths)
+        # helper = []
+        # a = torch.utils.data.DataLoader(dl.MyDataset(a), batch_size=dl.train_batch, shuffle=True, pin_memory=False)
+        # b = torch.utils.data.DataLoader(dl.MyDataset(b), batch_size=dl.train_batch, shuffle=True, pin_memory=False)
+        # c = torch.utils.data.DataLoader(dl.MyDataset(c), batch_size=dl.train_batch, shuffle=True, pin_memory=False)
+        # d = torch.utils.data.DataLoader(dl.MyDataset(d), batch_size=dl.train_batch, shuffle=True, pin_memory=False)
+        # helper.append(a)
+        # helper.append(b)
+        # helper.append(c)
+        # helper.append(d)
         for i in range(POP_SIZE - 1):
             temp = copy.deepcopy(pool[best])
-            train.train(temp, helper[i])
+            train.train(temp, tl)
             new_pool.append(temp)
         pool = new_pool
-    file = open("313326019_205385560_24.txt", 'w')
+    file = open("313326019_205385560_28.txt", 'w')
     for x, y in dl.test_data:
         temp = hof(x)
         temp = temp.argmax(dim=1)

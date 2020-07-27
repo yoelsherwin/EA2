@@ -70,10 +70,10 @@ lengths = []
 lengths.append(200000)
 lengths.append(500000)
 fit, mut = torch.utils.data.random_split(dataset, lengths)
-fit = data.DataLoader(fit, batch_size=train_batch, shuffle=True, pin_memory=True)
-#mut = data.DataLoader(mut, batch_size=train_batch, shuffle=True, pin_memory=True)
+fit = data.DataLoader(fit, batch_size=train_batch, shuffle=False, pin_memory=False)
+mut = data.DataLoader(mut, batch_size=train_batch, shuffle=True, pin_memory=True)
 
-train_loader = data.DataLoader(MyDataLoader("train.csv", num_lines=200),
+train_loader = data.DataLoader(MyDataLoader("validate.csv", num_lines=50000),
                                       batch_size=train_batch,
                                       shuffle=True,
                                       pin_memory=True)
@@ -81,5 +81,5 @@ train_loader = data.DataLoader(MyDataLoader("train.csv", num_lines=200),
 test_data = data.DataLoader(MyDataLoader("test.csv", num_lines=50000),
                                       batch_size=train_batch,
                                       shuffle=False,
-                                      pin_memory=True)
+                                      pin_memory=False)
 

@@ -10,7 +10,7 @@ def main():
     model = train.Model()
     model.load_state_dict(torch.load("best.pt"))
     #model.eval()
-    file = open("313326019_205385560_22.txt", 'w')
+    file = open("313326019_205385560_28.txt", 'w')
     data = dl.test_data
     for x,y in data:
         temp = model(x)
