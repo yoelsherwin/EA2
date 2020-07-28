@@ -3,14 +3,11 @@ import train
 import data_loader as dl
 
 
-FILENAME = "train.csv"
-SIZE = 10000
-
 def main():
     model = train.Model()
     model.load_state_dict(torch.load("best.pt"))
     #model.eval()
-    file = open("313326019_205385560_28.txt", 'w')
+    file = open("313326019_205385560_32.txt", 'w')
     data = dl.test_data
     for x,y in data:
         temp = model(x)
@@ -20,8 +17,6 @@ def main():
                 file.write("1\n")
             else:
                 file.write("0\n")
-            #file.write(str(temp[i]) + "\n")
-            #print(str(temp[i]) + "\n")
     file.close()
 
 

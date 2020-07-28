@@ -64,19 +64,19 @@ def try_parse_int(string, default=0):
         return default
 
 
-train_batch = 2000
-# dataset = MyDataLoader("train.csv", num_lines=700000)
-# lengths = []
-# lengths.append(200000)
-# lengths.append(500000)
-# fit, mut = torch.utils.data.random_split(dataset, lengths)
-# fit = data.DataLoader(fit, batch_size=train_batch, shuffle=False, pin_memory=False)
-# mut = data.DataLoader(mut, batch_size=train_batch, shuffle=True, pin_memory=True)
+train_batch = 10000
+dataset = MyDataLoader("train.csv", num_lines=700000)
+lengths = []
+lengths.append(100000)
+lengths.append(600000)
+fit, mut = torch.utils.data.random_split(dataset, lengths)
+fit = data.DataLoader(fit, batch_size=train_batch, shuffle=False, pin_memory=False)
+#mut = data.DataLoader(mut, batch_size=train_batch, shuffle=True, pin_memory=True)
 
-train_loader = data.DataLoader(MyDataLoader("validate.csv", num_lines=50000),
-                                      batch_size=train_batch,
-                                      shuffle=True,
-                                      pin_memory=True)
+# train_loader = data.DataLoader(MyDataLoader("train.csv", num_lines=200000),
+#                                       batch_size=train_batch,
+#                                       shuffle=True,
+#                                       pin_memory=True)
 
 test_data = data.DataLoader(MyDataLoader("test.csv", num_lines=50000),
                                       batch_size=train_batch,

@@ -1,7 +1,6 @@
 import numpy as np
 import math
 import torch
-import pickle
 
 def special_normalize(filename, size):
     save = open("means.npy", 'rb')
@@ -43,7 +42,6 @@ def special_normalize(filename, size):
         row_num += 1
 
     return data
-    #[([0,...,15),(1,0)), ...., ()]
 
 def createData(file_name, size):
     # mean and stdev

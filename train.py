@@ -1,10 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import create_params
-import numpy as np
-import data_loader as dl
-
+from evolution import THRESHOLD as THRESHOLD
 
 class Model(nn.Module):
     def __init__(self):
@@ -34,9 +31,7 @@ class Model(nn.Module):
         x = F.relu(self.bn5(self.fc5(x)))
         x = F.relu(self.bn6(self.fc6(x)))
 
-
         x = self.fc7(x)
-        # x = self.softmax(x)
 
         return x
 
@@ -44,38 +39,52 @@ def train(model, data):
     optimizer = torch.optim.Adam(model.parameters(), lr=0.007)
     loss_fn = nn.CrossEntropyLoss()
 
-    epochs = 20
+    epochs = 1
 
     for epoch in range(epochs):
-        sum_loss = 0
-        num_items = 0
-        num_corrects = 0
-
-        #optimizer.zero_grad()
-        # for x, y in data:
+        #TP = TN = FP = FN = 0
         for x, y in data:
             optimizer.zero_grad()
             y_hat = model(x)
-
             loss = loss_fn(y_hat, y)
+            # res = model(x)
+            # ans = []
+            # for i in range(len(res)):
+            #     if res[i][0] + THRESHOLD < res[i][1]:
+            #         ans.append(1)
+            #     else:
+            #         ans.append(0)
+            # res = ans
+            # for i in range(len(res)):
+            #     if res[i] == y[i] and y[i] == 1:
+            #         TP += 1
+            #     elif res[i] == y[i] and y[i] == 0:
+            #         TN += 1
+            #     elif res[i] == 0 and y[i] == 1:
+            #         FN += 1
+            #     else:
+            #         FP += 1
+            # if ((TP + FP) == 0):
+            #     precision = 0
+            # else:
+            #     precision = TP / (TP + FP)
+            # accuracy = (TP + TN) / (TP + TN + FP + FN)
+            # if ((TP + FN) == 0):
+            #     recall = 0
+            # else:
+            #     recall = TP / (TP + FN)
+            # # if ((0.0156 * precision + recall) != 0):
+            # if ((0.0625 * precision + recall) != 0):
+            #     Fbeta = (1.0625 * precision * recall) / (0.0625 * precision + recall)
+            # #   Fbeta = (1.0156 * precision * recall) / (0.0156 * precision + recall)
+            # else:
+            #     Fbeta = 0
+            #
             # got = []
             # target = []
             # got.append(Fbeta)
             # target.append(1)
             # loss = loss_fn(torch.tensor(got), torch.tensor(target))
-            #loss = 1 - Fbeta
+
             loss.backward()
-
-            #sum_loss += loss.item()
-            #num_items += len(y)
-
-            #argmax = y_hat.argmax(dim=1)
-            #corrects = y == argmax
-            #corrects = corrects.sum()
-            # print(corrects)
-            # print(corrects.size())
-            # print(corrects.sum())
-            #num_corrects += corrects.sum()
-
             optimizer.step()
-        #optimizer.step()

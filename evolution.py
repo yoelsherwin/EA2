@@ -1,38 +1,16 @@
 import train
-import create_params
-import random
 import torch
 import copy
 import data_loader as dl
 
 POP_SIZE = 5
-FILENAME = "train.csv"
-SIZE = 100000
-MAX_GEN = 30
+MAX_GEN = 20
 THRESHOLD = 0.3
 
-# fit = dl.fit
-# mut = dl.mut
-tl = dl.train_loader
+fit = dl.fit
+mut = dl.mut
+#tl = dl.train_loader
 
-# def mix(full, fit, mut):
-#     fcount = mcount = 0
-#     for i in range(SIZE):
-#         if fcount >= SIZE // 2:
-#             mut.append(full[i])
-#             mcount += 1
-#         elif mcount >= SIZE // 2:
-#             fit.append(full[i])
-#             fcount += 1
-#         else:
-#             if random.randint(0, 1) == 1:
-#                 mut.append(full[i])
-#                 mcount += 1
-#             else:
-#                 fit.append(full[i])
-#                 fcount += 1
-
-#mix(data, fit_data, mut_data)
 
 def compute(model, data):
     TP = TN = FP = FN = 0
@@ -86,7 +64,7 @@ def run(pool):
         max = -1
         all = 0
         for i in range(POP_SIZE):
-            fitness = compute(pool[i], tl)
+            fitness = compute(pool[i], fit)
             all += fitness
             if fitness > max:
                 best = i
@@ -104,27 +82,27 @@ def run(pool):
             break
         new_pool = []
         new_pool.append(pool[best])
-        # lengths = []
-        # lengths.append(125000)
-        # lengths.append(125000)
-        # lengths.append(125000)
-        # lengths.append(125000)
-        # a,b,c,d = torch.utils.data.random_split(mut, lengths)
-        # helper = []
-        # a = torch.utils.data.DataLoader(dl.MyDataset(a), batch_size=dl.train_batch, shuffle=True, pin_memory=False)
-        # b = torch.utils.data.DataLoader(dl.MyDataset(b), batch_size=dl.train_batch, shuffle=True, pin_memory=False)
-        # c = torch.utils.data.DataLoader(dl.MyDataset(c), batch_size=dl.train_batch, shuffle=True, pin_memory=False)
-        # d = torch.utils.data.DataLoader(dl.MyDataset(d), batch_size=dl.train_batch, shuffle=True, pin_memory=False)
-        # helper.append(a)
-        # helper.append(b)
-        # helper.append(c)
-        # helper.append(d)
+        lengths = []
+        lengths.append(150000)
+        lengths.append(150000)
+        lengths.append(150000)
+        lengths.append(150000)
+        a,b,c,d = torch.utils.data.random_split(mut, lengths)
+        helper = []
+        a = torch.utils.data.DataLoader(dl.MyDataset(a), batch_size=dl.train_batch, shuffle=True, pin_memory=False)
+        b = torch.utils.data.DataLoader(dl.MyDataset(b), batch_size=dl.train_batch, shuffle=True, pin_memory=False)
+        c = torch.utils.data.DataLoader(dl.MyDataset(c), batch_size=dl.train_batch, shuffle=True, pin_memory=False)
+        d = torch.utils.data.DataLoader(dl.MyDataset(d), batch_size=dl.train_batch, shuffle=True, pin_memory=False)
+        helper.append(a)
+        helper.append(b)
+        helper.append(c)
+        helper.append(d)
         for i in range(POP_SIZE - 1):
             temp = copy.deepcopy(pool[best])
-            train.train(temp, tl)
+            train.train(temp, helper[i])
             new_pool.append(temp)
         pool = new_pool
-    file = open("313326019_205385560_28.txt", 'w')
+    file = open("313326019_205385560_35.txt", 'w')
     for x, y in dl.test_data:
         temp = hof(x)
         temp = temp.argmax(dim=1)
@@ -133,8 +111,6 @@ def run(pool):
                 file.write("1\n")
             else:
                 file.write("0\n")
-            #file.write(str(temp[i]) + "\n")
-            #print(str(temp[i]) + "\n")
     file.close()
     stats.close()
 
@@ -144,137 +120,6 @@ def main():
     for i in range(POP_SIZE):
         pool.append(train.Model())
     run(pool)
-
-
-# def split(data):
-#     a = []
-#     b = []
-#     c = []
-#     d = []
-#     ac = bc = cc = dc = 0
-#     for line in data:
-#         if (ac == bc == cc == SIZE // 8):
-#             d.append(line)
-#             dc += 1
-#         elif (ac == bc == dc == SIZE // 8):
-#             c.append(line)
-#             cc += 1
-#         elif (ac == cc == dc == SIZE // 8):
-#             b.append(line)
-#             bc += 1
-#         elif (bc == cc == dc == SIZE // 8):
-#             a.append(line)
-#             ac += 1
-#         elif (ac == bc == SIZE // 8):
-#             test = random.randint(0, 1)
-#             if test == 1:
-#                 c.append(line)
-#                 cc += 1
-#             else:
-#                 d.append(line)
-#                 dc += 1
-#         elif (ac == cc == SIZE // 8):
-#             test = random.randint(0, 1)
-#             if test == 1:
-#                 b.append(line)
-#                 bc += 1
-#             else:
-#                 d.append(line)
-#                 dc += 1
-#         elif (ac == dc == SIZE // 8):
-#             test = random.randint(0, 1)
-#             if test == 1:
-#                 c.append(line)
-#                 cc += 1
-#             else:
-#                 b.append(line)
-#                 bc += 1
-#         elif (bc == cc == SIZE // 8):
-#             test = random.randint(0, 1)
-#             if test == 1:
-#                 a.append(line)
-#                 ac += 1
-#             else:
-#                 d.append(line)
-#                 dc += 1
-#         elif (bc == dc == SIZE // 8):
-#             test = random.randint(0, 1)
-#             if test == 1:
-#                 a.append(line)
-#                 ac += 1
-#             else:
-#                 c.append(line)
-#                 cc += 1
-#         elif (cc == dc == SIZE // 8):
-#             test = random.randint(0, 1)
-#             if test == 1:
-#                 a.append(line)
-#                 ac += 1
-#             else:
-#                 b.append(line)
-#                 bc += 1
-#         elif (ac == SIZE // 8):
-#             test = random.randint(0, 2)
-#             if test == 0:
-#                 b.append(line)
-#                 bc += 1
-#             elif test == 1:
-#                 c.append(line)
-#                 cc += 1
-#             else:
-#                 d.append(line)
-#                 dc += 1
-#         elif (bc == SIZE // 8):
-#             test = random.randint(0, 2)
-#             if test == 0:
-#                 a.append(line)
-#                 ac += 1
-#             elif test == 1:
-#                 c.append(line)
-#                 cc += 1
-#             else:
-#                 d.append(line)
-#                 dc += 1
-#         elif (cc == SIZE // 8):
-#             test = random.randint(0, 2)
-#             if test == 0:
-#                 b.append(line)
-#                 bc += 1
-#             elif test == 1:
-#                 a.append(line)
-#                 ac += 1
-#             else:
-#                 d.append(line)
-#                 dc += 1
-#         elif (dc == SIZE // 8):
-#             test = random.randint(0, 2)
-#             if test == 0:
-#                 b.append(line)
-#                 bc += 1
-#             elif test == 1:
-#                 c.append(line)
-#                 cc += 1
-#             else:
-#                 a.append(line)
-#                 ac += 1
-#         else:
-#             test = random.randint(0, 4)
-#             if test == 0:
-#                 a.append(line)
-#                 ac += 1
-#             elif test == 1:
-#                 b.append(line)
-#                 bc += 1
-#             elif test == 2:
-#                 c.append(line)
-#                 cc += 1
-#             else:
-#                 d.append(line)
-#                 dc += 1
-#     return a, b, c, d
-
-
-
 
 
 if __name__ == "__main__":
