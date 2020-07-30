@@ -2,10 +2,11 @@ import train
 import torch
 import copy
 import data_loader as dl
+import random
 
 POP_SIZE = 5
-MAX_GEN = 20
-THRESHOLD = 0.3
+MAX_GEN = 50
+THRESHOLD = 0.1
 
 fit = dl.fit
 mut = dl.mut
@@ -116,6 +117,7 @@ def run(pool):
 
 
 def main():
+    random.seed(10)
     pool = []
     for i in range(POP_SIZE):
         pool.append(train.Model())

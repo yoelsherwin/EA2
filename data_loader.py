@@ -64,7 +64,7 @@ def try_parse_int(string, default=0):
         return default
 
 
-train_batch = 10000
+train_batch = 2000
 dataset = MyDataLoader("train.csv", num_lines=700000)
 lengths = []
 lengths.append(100000)

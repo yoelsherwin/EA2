@@ -36,7 +36,7 @@ class Model(nn.Module):
         return x
 
 def train(model, data):
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.007)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.000007)
     loss_fn = nn.CrossEntropyLoss()
 
     epochs = 1
@@ -47,44 +47,5 @@ def train(model, data):
             optimizer.zero_grad()
             y_hat = model(x)
             loss = loss_fn(y_hat, y)
-            # res = model(x)
-            # ans = []
-            # for i in range(len(res)):
-            #     if res[i][0] + THRESHOLD < res[i][1]:
-            #         ans.append(1)
-            #     else:
-            #         ans.append(0)
-            # res = ans
-            # for i in range(len(res)):
-            #     if res[i] == y[i] and y[i] == 1:
-            #         TP += 1
-            #     elif res[i] == y[i] and y[i] == 0:
-            #         TN += 1
-            #     elif res[i] == 0 and y[i] == 1:
-            #         FN += 1
-            #     else:
-            #         FP += 1
-            # if ((TP + FP) == 0):
-            #     precision = 0
-            # else:
-            #     precision = TP / (TP + FP)
-            # accuracy = (TP + TN) / (TP + TN + FP + FN)
-            # if ((TP + FN) == 0):
-            #     recall = 0
-            # else:
-            #     recall = TP / (TP + FN)
-            # # if ((0.0156 * precision + recall) != 0):
-            # if ((0.0625 * precision + recall) != 0):
-            #     Fbeta = (1.0625 * precision * recall) / (0.0625 * precision + recall)
-            # #   Fbeta = (1.0156 * precision * recall) / (0.0156 * precision + recall)
-            # else:
-            #     Fbeta = 0
-            #
-            # got = []
-            # target = []
-            # got.append(Fbeta)
-            # target.append(1)
-            # loss = loss_fn(torch.tensor(got), torch.tensor(target))
-
             loss.backward()
             optimizer.step()
