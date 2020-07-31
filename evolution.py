@@ -5,8 +5,8 @@ import data_loader as dl
 import random
 
 POP_SIZE = 5
-MAX_GEN = 50
-THRESHOLD = 0.1
+MAX_GEN = 35
+THRESHOLD = -0.35
 
 fit = dl.fit
 mut = dl.mut
@@ -84,10 +84,10 @@ def run(pool):
         new_pool = []
         new_pool.append(pool[best])
         lengths = []
-        lengths.append(150000)
-        lengths.append(150000)
-        lengths.append(150000)
-        lengths.append(150000)
+        lengths.append(15000)
+        lengths.append(15000)
+        lengths.append(15000)
+        lengths.append(15000)
         a,b,c,d = torch.utils.data.random_split(mut, lengths)
         helper = []
         a = torch.utils.data.DataLoader(dl.MyDataset(a), batch_size=dl.train_batch, shuffle=True, pin_memory=False)
@@ -103,7 +103,7 @@ def run(pool):
             train.train(temp, helper[i])
             new_pool.append(temp)
         pool = new_pool
-    file = open("313326019_205385560_35.txt", 'w')
+    file = open("313326019_205385560_46.txt", 'w')
     for x, y in dl.test_data:
         temp = hof(x)
         temp = temp.argmax(dim=1)
