@@ -2,22 +2,19 @@ import train
 import torch
 import copy
 import data_loader as dl
-import random
 
 POP_SIZE = 5
-MAX_GEN = 35
-THRESHOLD = -0.35
+MAX_GEN = 50
+THRESHOLD = 0.45
 
 fit = dl.fit
 mut = dl.mut
-#tl = dl.train_loader
 
 
 def compute(model, data):
     TP = TN = FP = FN = 0
     for x,y in data:
         res = model(x)
-        #res = res.argmax(dim=1)
         ans = []
         for i in range(len(res)):
             if res[i][0] + THRESHOLD < res[i][1]:
@@ -43,10 +40,8 @@ def compute(model, data):
         recall = 0
     else:
         recall = TP / (TP + FN)
-    #if ((0.0156 * precision + recall) != 0):
     if ((0.0625 * precision + recall) != 0):
         Fbeta = (1.0625 * precision * recall) / (0.0625 * precision + recall)
-     #   Fbeta = (1.0156 * precision * recall) / (0.0156 * precision + recall)
     else:
         Fbeta = 0
     print("TP: " + str(TP) + " TN: " + str(TN) + " FP: " + str(FP) + " FN: " + str(FN) +
@@ -84,10 +79,10 @@ def run(pool):
         new_pool = []
         new_pool.append(pool[best])
         lengths = []
-        lengths.append(15000)
-        lengths.append(15000)
-        lengths.append(15000)
-        lengths.append(15000)
+        lengths.append(150000)
+        lengths.append(150000)
+        lengths.append(150000)
+        lengths.append(150000)
         a,b,c,d = torch.utils.data.random_split(mut, lengths)
         helper = []
         a = torch.utils.data.DataLoader(dl.MyDataset(a), batch_size=dl.train_batch, shuffle=True, pin_memory=False)
@@ -103,7 +98,7 @@ def run(pool):
             train.train(temp, helper[i])
             new_pool.append(temp)
         pool = new_pool
-    file = open("313326019_205385560_46.txt", 'w')
+    file = open("output.txt", 'w')
     for x, y in dl.test_data:
         temp = hof(x)
         temp = temp.argmax(dim=1)
@@ -117,7 +112,6 @@ def run(pool):
 
 
 def main():
-    random.seed(10)
     pool = []
     for i in range(POP_SIZE):
         pool.append(train.Model())

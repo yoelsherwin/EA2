@@ -1,14 +1,17 @@
 import torch
 import train
 import data_loader as dl
+import sys
 
 
-def main():
+def main(input, output, numlines):
     model = train.Model()
     model.load_state_dict(torch.load("best.pt"))
-    #model.eval()
-    file = open("313326019_205385560_32.txt", 'w')
-    data = dl.test_data
+    file = open(output, 'w')
+    data = torch.utils.data.DataLoader(dl.MyDataLoader(input, num_lines=numlines),
+                                      batch_size=dl.train_batch,
+                                      shuffle=False,
+                                      pin_memory=False)
     for x,y in data:
         temp = model(x)
         temp = temp.argmax(dim=1)
@@ -22,4 +25,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    if (len(sys.argv) > 3):
+        main(sys.argv[1], sys.argv[2], sys.argv[3])
+    else:
+        # change here input, output and number of lines
+        main("input.csv", "output.txt", 500000)

@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from evolution import THRESHOLD as THRESHOLD
 
 class Model(nn.Module):
     def __init__(self):
@@ -36,13 +35,12 @@ class Model(nn.Module):
         return x
 
 def train(model, data):
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.000007)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.000013)
     loss_fn = nn.CrossEntropyLoss()
 
     epochs = 1
 
     for epoch in range(epochs):
-        #TP = TN = FP = FN = 0
         for x, y in data:
             optimizer.zero_grad()
             y_hat = model(x)
